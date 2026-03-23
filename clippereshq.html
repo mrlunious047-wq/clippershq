@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ClippersHQ</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;overflow-x:hidden;-webkit-font-smoothing:antialiased;font-family:'Inter',system-ui,sans-serif;color:#fff}
+html{scroll-behavior:smooth}
+::selection{background:rgba(255,255,255,0.1);color:#fff}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.05);border-radius:2px}
+
+@keyframes fi{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes breathe{0%,100%{box-shadow:0 0 12px rgba(255,255,255,0.08)}50%{box-shadow:0 0 22px rgba(255,255,255,0.18)}}
+@keyframes lineG{0%,100%{opacity:.25}50%{opacity:.65}}
+@keyframes glowPulse{0%,100%{text-shadow:0 0 20px rgba(255,255,255,0.15)}50%{text-shadow:0 0 30px rgba(255,255,255,0.3),0 0 60px rgba(255,255,255,0.1)}}
+
+/* Particles */
+#particles{position:fixed;inset:0;pointer-events:none;z-index:0}
+.particle{position:absolute;border-radius:50%;background:rgba(255,255,255,0.1);box-shadow:0 0 4px rgba(255,255,255,0.05)}
+
+/* Layout */
+#app{position:relative;z-index:1}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 32px;height:56px;display:flex;align-items:center;justify-content:space-between;transition:all 0.4s}
+nav.scrolled{background:rgba(0,0,0,0.82);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.04)}
+.nav-logo{display:flex;align-items:center;gap:8px;animation:fi 0.5s 0.1s both}
+.nav-logo img{width:28px;height:28px;border-radius:7px;animation:breathe 3s infinite;box-shadow:0 0 14px rgba(255,255,255,0.1)}
+.nav-logo span{font-size:14px;font-weight:700;letter-spacing:-0.3px;text-shadow:0 0 12px rgba(255,255,255,0.15)}
+.nav-btn{text-decoration:none;animation:fi 0.5s 0.15s both}
+.nav-btn div{clip-path:polygon(0% 0%, 85% 0%, 100% 50%, 85% 100%, 0% 100%);padding:8px 24px 8px 12px;background:#fff;color:#000;font-size:11px;font-weight:700;font-family:inherit;box-shadow:0 0 12px rgba(255,255,255,0.12),0 0 25px rgba(255,255,255,0.04);transition:box-shadow 0.3s;cursor:pointer}
+.nav-btn div:hover{box-shadow:0 0 20px rgba(255,255,255,0.3),0 0 40px rgba(255,255,255,0.08)}
+
+/* HERO */
+#hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 20px 40px;position:relative}
+.hero-glow{position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);width:500px;height:500px;background:radial-gradient(circle,rgba(255,255,255,0.025),transparent 60%);border-radius:50%;filter:blur(40px);pointer-events:none}
+.hero-inner{position:relative;z-index:1;max-width:680px}
+.social-proof{display:inline-flex;align-items:center;gap:6px;padding:5px 16px 5px 5px;border-radius:100px;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);margin-bottom:24px;animation:fi 0.6s 0.15s both;box-shadow:0 0 15px rgba(255,255,255,0.02)}
+.avatar-stack{display:flex}
+.avatar-stack img{width:26px;height:26px;border-radius:50%;border:2px solid #000;position:relative;box-shadow:0 0 6px rgba(255,255,255,0.08)}
+.avatar-stack img:nth-child(2){margin-left:-6px;z-index:2}
+.avatar-stack img:nth-child(3){margin-left:-6px;z-index:1}
+.social-proof span{font-size:11px;color:rgba(255,255,255,0.45);font-weight:600;text-shadow:0 0 8px rgba(255,255,255,0.06)}
+h1{font-size:clamp(36px,7vw,68px);font-weight:800;line-height:1;letter-spacing:-2.5px;margin:0 0 16px;text-shadow:0 0 30px rgba(255,255,255,0.25),0 0 60px rgba(255,255,255,0.08),0 0 100px rgba(255,255,255,0.03);animation:fi 0.8s 0.25s both}
+.hero-sub{font-size:14px;color:rgba(255,255,255,0.3);line-height:1.6;max-width:400px;margin:0 auto 32px;animation:fi 0.7s 0.35s both;text-shadow:0 0 8px rgba(255,255,255,0.04)}
+.btn-group{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+/* Triangle Buttons */
+.tri-btn{text-decoration:none}
+.tri-btn div{padding:16px 52px 16px 24px;clip-path:polygon(0% 0%, 80% 0%, 100% 50%, 80% 100%, 0% 100%);font-size:14px;font-weight:700;font-family:'Inter',system-ui,sans-serif;cursor:pointer;white-space:nowrap;transition:all 0.35s cubic-bezier(0.16,1,0.3,1);letter-spacing:-0.2px}
+.tri-btn.filled div{background:#fff;color:#000;box-shadow:0 0 15px rgba(255,255,255,0.15),0 0 35px rgba(255,255,255,0.06)}
+.tri-btn.outline div{background:rgba(255,255,255,0.07);color:#fff;box-shadow:0 0 8px rgba(255,255,255,0.06)}
+.tri-btn.filled div:hover{box-shadow:0 0 30px rgba(255,255,255,0.4),0 0 60px rgba(255,255,255,0.12),0 0 90px rgba(255,255,255,0.04);transform:translateX(3px) scale(1.02)}
+.tri-btn.outline div:hover{box-shadow:0 0 20px rgba(255,255,255,0.2),0 0 45px rgba(255,255,255,0.06);transform:translateX(3px) scale(1.02);text-shadow:0 0 10px rgba(255,255,255,0.2)}
+
+/* VSL */
+#vsl{margin-top:48px;width:100%;max-width:580px;animation:fi 0.9s 0.7s both}
+.vsl-wrap{border-radius:16px;overflow:hidden;background:#0a0a0a;border:1px solid rgba(255,255,255,0.06);aspect-ratio:16/9;position:relative;box-shadow:0 0 30px rgba(255,255,255,0.02),0 12px 40px rgba(0,0,0,0.4)}
+.vsl-thumb{width:100%;height:100%;display:flex;align-items:center;justify-content:center;cursor:pointer;background:linear-gradient(135deg,#0a0a0a,#111);position:relative}
+.vsl-thumb img.thumb-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.35}
+.play-btn{width:68px;height:68px;border-radius:50%;background:rgba(255,255,255,0.1);border:2px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;position:relative;z-index:2;box-shadow:0 0 25px rgba(255,255,255,0.12),0 0 50px rgba(255,255,255,0.04);transition:all 0.3s}
+.play-btn:hover{box-shadow:0 0 35px rgba(255,255,255,0.25),0 0 70px rgba(255,255,255,0.08);background:rgba(255,255,255,0.15);transform:scale(1.08)}
+.play-btn svg{filter:drop-shadow(0 0 6px rgba(255,255,255,0.3))}
+.vsl-label{position:absolute;bottom:16px;left:20px;z-index:2;display:flex;align-items:center;gap:8px}
+.vsl-label img{width:20px;height:20px;border-radius:5px;box-shadow:0 0 6px rgba(255,255,255,0.08)}
+.vsl-label span{font-size:12px;font-weight:600;color:rgba(255,255,255,0.45);text-shadow:0 0 10px rgba(0,0,0,0.8),0 0 6px rgba(255,255,255,0.06)}
+#vsl-iframe{width:100%;height:100%;border:none}
+
+/* BRANDS */
+#brands{border-top:1px solid rgba(255,255,255,0.04);padding:24px 20px;display:flex;align-items:center;justify-content:center;gap:36px;flex-wrap:wrap}
+.brand-item{display:flex;align-items:center;gap:8px;opacity:0.35;transition:opacity 0.3s;cursor:default}
+.brand-item:hover{opacity:0.7}
+.brand-item img{width:28px;height:28px;border-radius:8px;box-shadow:0 0 8px rgba(255,255,255,0.06)}
+.brand-item span{font-size:12px;font-weight:700;letter-spacing:-0.2px;text-shadow:0 0 6px rgba(255,255,255,0.06)}
+.brand-more{font-size:11px;color:rgba(255,255,255,0.1);font-style:italic;text-shadow:0 0 4px rgba(255,255,255,0.03)}
+
+/* STATS */
+#stats{padding:56px 20px;max-width:800px;margin:0 auto}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px}
+.stat-item{padding:24px 12px;text-align:center;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.03);opacity:0;transform:translateY(16px);transition:all 0.5s}
+.stat-item:first-child{border-radius:12px 0 0 12px}
+.stat-item:last-child{border-radius:0 12px 12px 0}
+.stat-item.visible{opacity:1;transform:none}
+.stat-val{font-size:clamp(24px,3.5vw,34px);font-weight:800;letter-spacing:-1px;text-shadow:0 0 20px rgba(255,255,255,0.2),0 0 45px rgba(255,255,255,0.06)}
+.stat-lbl{font-size:10px;color:rgba(255,255,255,0.22);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;text-shadow:0 0 6px rgba(255,255,255,0.04)}
+
+/* PROCESS */
+#process{padding:40px 20px 72px;max-width:480px;margin:0 auto}
+.section-label{font-size:10px;font-weight:700;color:rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:3px;text-shadow:0 0 8px rgba(255,255,255,0.04)}
+.section-title{font-size:clamp(22px,3.5vw,30px);font-weight:800;letter-spacing:-1px;margin-top:8px;text-shadow:0 0 20px rgba(255,255,255,0.2),0 0 50px rgba(255,255,255,0.06)}
+.section-head{text-align:center;margin-bottom:32px}
+.process-list{position:relative;padding-left:32px}
+.process-line{position:absolute;left:9px;top:0;bottom:0;width:1px;background:linear-gradient(rgba(255,255,255,0.04),rgba(255,255,255,0.1),rgba(255,255,255,0.04));box-shadow:0 0 4px rgba(255,255,255,0.03)}
+.process-line.animated{animation:lineG 3s infinite}
+.step{position:relative;margin-bottom:28px;padding-left:20px;opacity:0;transform:translateX(-12px);transition:all 0.5s}
+.step.visible{opacity:1;transform:none}
+.step-dot{position:absolute;left:-12px;top:3px;width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 0 8px rgba(255,255,255,0.3),0 0 16px rgba(255,255,255,0.1)}
+.step-num{font-size:10px;color:rgba(255,255,255,0.18);font-weight:700;margin-bottom:3px;text-shadow:0 0 4px rgba(255,255,255,0.04)}
+.step-title{font-size:14px;font-weight:700;margin-bottom:3px;text-shadow:0 0 10px rgba(255,255,255,0.1)}
+.step-desc{font-size:12px;color:rgba(255,255,255,0.28);line-height:1.55;text-shadow:0 0 6px rgba(255,255,255,0.03)}
+
+/* RESULTS */
+#results{padding:40px 20px 72px;max-width:660px;margin:0 auto}
+.result-grid{display:grid;gap:6px}
+.result-row{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-radius:10px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.025);transition:all 0.3s;flex-wrap:wrap;gap:10px;opacity:0;transform:translateY(14px)}
+.result-row.visible{opacity:1;transform:none}
+.result-row:hover{background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.07);box-shadow:0 0 20px rgba(255,255,255,0.02)}
+.result-row:hover .result-name{text-shadow:0 0 25px rgba(255,255,255,0.35),0 0 60px rgba(255,255,255,0.1)}
+.result-left{flex:1;min-width:120px}
+.result-name{font-size:13px;font-weight:700;text-shadow:0 0 10px rgba(255,255,255,0.06)}
+.result-platform{font-size:10px;color:rgba(255,255,255,0.18);margin-top:1px;text-shadow:0 0 10px rgba(255,255,255,0.06)}
+.result-right{display:flex;gap:20px}
+.result-stat{text-align:right}
+.result-stat-lbl{font-size:9px;color:rgba(255,255,255,0.15);font-weight:600;text-transform:uppercase;letter-spacing:1px}
+.result-stat-val{font-size:16px;font-weight:800;letter-spacing:-0.5px;text-shadow:0 0 20px rgba(255,255,255,0.2),0 0 50px rgba(255,255,255,0.06)}
+
+/* MARQUEE */
+#marquee-wrap{border-top:1px solid rgba(255,255,255,0.025);overflow:hidden;padding:12px 0}
+.marquee-track{display:flex;animation:marquee 22s linear infinite;white-space:nowrap}
+.marquee-track span{padding:0 16px;font-size:10px;font-weight:600;color:rgba(255,255,255,0.07);text-transform:uppercase;letter-spacing:2px;flex-shrink:0;text-shadow:0 0 6px rgba(255,255,255,0.03)}
+.marquee-track span.dot{color:rgba(255,255,255,0.04);text-shadow:none}
+
+/* CTA */
+#cta{padding:88px 20px;text-align:center;position:relative}
+.cta-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:400px;height:400px;background:radial-gradient(circle,rgba(255,255,255,0.02),transparent 55%);border-radius:50%;filter:blur(30px);pointer-events:none}
+.cta-inner{position:relative;z-index:1;opacity:0;transform:translateY(16px);transition:all 0.6s}
+.cta-inner.visible{opacity:1;transform:none}
+.cta-title{font-size:clamp(24px,4.5vw,42px);font-weight:800;letter-spacing:-1.5px;line-height:1.05;margin-bottom:12px;text-shadow:0 0 25px rgba(255,255,255,0.22),0 0 55px rgba(255,255,255,0.06);animation:none}
+.cta-inner.visible .cta-title{animation:glowPulse 4s infinite}
+.cta-sub{color:rgba(255,255,255,0.22);font-size:13px;margin-bottom:28px;text-shadow:0 0 6px rgba(255,255,255,0.04)}
+
+/* FOOTER */
+footer{border-top:1px solid rgba(255,255,255,0.025);padding:24px 32px;display:flex;align-items:center;justify-content:space-between;max-width:800px;margin:0 auto;flex-wrap:wrap;gap:10px}
+.footer-logo{display:flex;align-items:center;gap:6px}
+.footer-logo img{width:20px;height:20px;border-radius:5px;box-shadow:0 0 6px rgba(255,255,255,0.06)}
+.footer-logo span{font-weight:700;font-size:12px;text-shadow:0 0 6px rgba(255,255,255,0.06)}
+.footer-copy{font-size:10px;color:rgba(255,255,255,0.1);text-shadow:0 0 4px rgba(255,255,255,0.02)}
+
+/* Animations for hero btns */
+.hero-btn1{animation:fi 0.7s 0.45s both}
+.hero-btn2{animation:fi 0.7s 0.55s both}
+</style>
+</head>
+<body>
+
+<div id="particles"></div>
+
+<div id="app">
+
+  <!-- NAV -->
+  <nav id="nav">
+    <div class="nav-logo">
+      <img id="logo-img" src="" alt="" />
+      <span>ClippersHQ</span>
+    </div>
+    <a href="https://discord.gg/3EAcQVfq" target="_blank" rel="noopener noreferrer" class="nav-btn">
+      <div>Join Discord</div>
+    </a>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-inner">
+      <div class="social-proof">
+        <div class="avatar-stack" id="avatar-stack"></div>
+        <span>2B+ views generated</span>
+      </div>
+      <h1>The #1 Clipping<br>Agency</h1>
+      <p class="hero-sub">5,000+ clippers distribute your content everywhere. Or clip and earn per view.</p>
+      <div class="btn-group">
+        <span class="hero-btn1">
+          <a href="https://discord.gg/3EAcQVfq" target="_blank" rel="noopener noreferrer" class="tri-btn filled">
+            <div>I'm a Creator</div>
+          </a>
+        </span>
+        <span class="hero-btn2">
+          <a href="https://discord.gg/3EAcQVfq" target="_blank" rel="noopener noreferrer" class="tri-btn outline">
+            <div>I'm a Clipper</div>
+          </a>
+        </span>
+      </div>
+    </div>
+    <div id="vsl">
+      <div class="vsl-wrap">
+        <div class="vsl-thumb" id="vsl-thumb">
+          <img class="thumb-bg" src="https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg" alt="" />
+          <div class="play-btn" id="play-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff"><polygon points="8 5 20 12 8 19"/></svg>
+          </div>
+          <div class="vsl-label">
+            <img id="vsl-logo" src="" alt="" />
+            <span>ClippersHQ - How It Works</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BRANDS -->
+  <div id="brands">
+    <div class="brand-item" id="brand-gainz">
+      <img src="" alt="" />
+      <span>GainzAlgo</span>
+    </div>
+    <div class="brand-item" id="brand-grateful">
+      <img src="" alt="" />
+      <span>Grateful</span>
+    </div>
+    <div class="brand-item" id="brand-hapday">
+      <img src="" alt="" />
+      <span>Hapday AI</span>
+    </div>
+    <span class="brand-more">+ 50 more creators</span>
+  </div>
+
+  <!-- STATS -->
+  <section id="stats">
+    <div class="stats-grid">
+      <div class="stat-item" style="transition-delay:0s"><div class="stat-val">$500K+</div><div class="stat-lbl">Paid</div></div>
+      <div class="stat-item" style="transition-delay:0.08s"><div class="stat-val">5K+</div><div class="stat-lbl">Clippers</div></div>
+      <div class="stat-item" style="transition-delay:0.16s"><div class="stat-val">2B+</div><div class="stat-lbl">Views</div></div>
+      <div class="stat-item" style="transition-delay:0.24s"><div class="stat-val">50+</div><div class="stat-lbl">Campaigns</div></div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section id="process">
+    <div class="section-head">
+      <div class="section-label">Process</div>
+      <h2 class="section-title">How it works</h2>
+    </div>
+    <div class="process-list">
+      <div class="process-line" id="process-line"></div>
+      <div class="step" style="transition-delay:0.1s">
+        <div class="step-dot"></div>
+        <div class="step-num">Step 1</div>
+        <div class="step-title">Join Discord</div>
+        <div class="step-desc">Click Creator or Clipper. We onboard you in minutes.</div>
+      </div>
+      <div class="step" style="transition-delay:0.22s">
+        <div class="step-dot"></div>
+        <div class="step-num">Step 2</div>
+        <div class="step-title">Clippers post</div>
+        <div class="step-desc">Your content gets distributed across TikTok, Reels & Shorts.</div>
+      </div>
+      <div class="step" style="transition-delay:0.34s">
+        <div class="step-dot"></div>
+        <div class="step-num">Step 3</div>
+        <div class="step-title">Track & earn</div>
+        <div class="step-desc">Real-time tracking. Every view counted, every dollar transparent.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results">
+    <div class="section-head">
+      <div class="section-label">Results</div>
+      <h2 class="section-title">Real numbers</h2>
+    </div>
+    <div class="result-grid">
+      <div class="result-row" style="transition-delay:0s">
+        <div class="result-left"><div class="result-name">GainzAlgo Growth</div><div class="result-platform">TikTok · YT</div></div>
+        <div class="result-right"><div class="result-stat"><div class="result-stat-lbl">Views</div><div class="result-stat-val">48M+</div></div><div class="result-stat"><div class="result-stat-lbl">Earned</div><div class="result-stat-val">$62K</div></div></div>
+      </div>
+      <div class="result-row" style="transition-delay:0.07s">
+        <div class="result-left"><div class="result-name">Grateful Music Push</div><div class="result-platform">TikTok · IG</div></div>
+        <div class="result-right"><div class="result-stat"><div class="result-stat-lbl">Views</div><div class="result-stat-val">22M+</div></div><div class="result-stat"><div class="result-stat-lbl">Earned</div><div class="result-stat-val">$31K</div></div></div>
+      </div>
+      <div class="result-row" style="transition-delay:0.14s">
+        <div class="result-left"><div class="result-name">Hapday AI Launch</div><div class="result-platform">All Platforms</div></div>
+        <div class="result-right"><div class="result-stat"><div class="result-stat-lbl">Views</div><div class="result-stat-val">31M+</div></div><div class="result-stat"><div class="result-stat-lbl">Earned</div><div class="result-stat-val">$44K</div></div></div>
+      </div>
+      <div class="result-row" style="transition-delay:0.21s">
+        <div class="result-left"><div class="result-name">Streamer Highlights</div><div class="result-platform">YT · TikTok</div></div>
+        <div class="result-right"><div class="result-stat"><div class="result-stat-lbl">Views</div><div class="result-stat-val">115M+</div></div><div class="result-stat"><div class="result-stat-lbl">Earned</div><div class="result-stat-val">$89K</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div id="marquee-wrap">
+    <div class="marquee-track" id="marquee-track"></div>
+  </div>
+
+  <!-- CTA -->
+  <section id="cta">
+    <div class="cta-glow"></div>
+    <div class="cta-inner" id="cta-inner">
+      <h2 class="cta-title">Stop watching.<br>Start earning.</h2>
+      <p class="cta-sub">Join the Discord. Pick your role.</p>
+      <div class="btn-group">
+        <a href="https://discord.gg/3EAcQVfq" target="_blank" rel="noopener noreferrer" class="tri-btn filled">
+          <div>I'm a Creator</div>
+        </a>
+        <a href="https://discord.gg/3EAcQVfq" target="_blank" rel="noopener noreferrer" class="tri-btn outline">
+          <div>I'm a Clipper</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">
+      <img id="footer-logo" src="" alt="" />
+      <span>ClippersHQ</span>
+    </div>
+    <span class="footer-copy">© 2026 ClippersHQ</span>
+  </footer>
+
+</div>
+
+<script>
+// ─── IMAGES (base64) ───────────────────────────────────────────────────────────
+const L = {
+  clip: "data:image/webp;base64,UklGRpIAAABXRUJQVlA4IIYAAACQBQCdASpAAEAAPtFkqU8oJaQiKhzIAQAaCWkAAHDilA+1al0mlQLB+6cUtniCKDS78qLMgAD+9BWp61XDBOcWUGl2rxbucoCiXXkpJkUOKRIQl84c74EHzZlXe9CPwO+Wh7MgnaoEX9fyGNknP0ZHgFs8LhdoderFlcMY3tAqWJT/0AAAAA==",
+  grateful: "data:image/webp;base64,UklGRuAEAABXRUJQVlA4INQEAABwFACdASpAAEAAPrVCmUunI6IhufxKqOAWiWwAuzNVhvSJ7B24A4sNDb9c9Nps289WYJuYxKc2oExwmyltZl0aUdn30CknIP5JkLLe7/tFBNSp88eystkH5EGkqsJdS18nYMa6RM4aOe+LeMSUpUTs89sjCYnpHkhjvxcoB0YFwisA/HfUNAm9JSt/xk9rN3tA19SZbt2C4fAREi+X+8t8Xc3MDYg53Sgwwk/AAP7l4YocKZjRX6/IqgHe6vjoKFhM55Fa39pJZx/ml46lt9p1R1L6dYWIzHmSPYEukIWKzWrbbaOHONKhoK98+me6OmXZ5tPEJhDXISyYNpyakl4KDGcK8rhZpUFUk9PvHJDWUoYwGMYDzkzNdC5j8Q03EdJp1BMs02pZGjlvol5hE/dT1rd9EvvdatUyT+xefwcd6fwf1uzaVmWeHXJI0CkHaGu1kWbm4+78Ut6vdXS36cHQoiMZWvhKp4DBxuvAz2tADfgnKMjuQj4vZIySHyQFITkw2Huc7iuOpzmEUvDZ7wgRcOzusIYV92JEKO9TfSxUbgzAmEg0rx+fJ0bMFEYpTe2WLUlOJJi2kLSjLB2QYdKBQGTAxnGXXYXJklDOTX/dUkzCek/M8ItKoOOhS4CF+ze75I5HzHZPLKUQpsqSiSUz5lAd04kiu1FFLaKRE8uIrdWAoCcqZbdEvOIinAFIQcwTpDTYoB2rE7OhG4QBNEirvfghDHi45Vz3XmqPWpQfy6E7iDEBZ62TG9AMkdk5J7L9deKH+7ihJdXMppxn6DI5u79HKhCofPPSsirGIk6lUmAZcIS8sBVQ53l582T++tblDPWsg0RzCQLGeHWWHdK+L6zYzCjEzKD3DAmIudtDPB3PtloBzb1BcMdQU2ZaOzf9uf+w5NQsBECJex6YzNPLYHqSZvlIsVOAKKg6/v7L7BOiL89aRYZxWx4Z3Zz8jkUYnAyE5WgejUeJ/vAdWR0AiD+3KRbbbQGbZmefLJSq3h+eNFx4yjPx1DE2toQgH3rIc8LcTf6IJQMVBAv3gFD4QYzyvF0/dYHw7oqt5xgnDR8JvZzk11oDayov2ReydqS1T2pNGrmC0hhuisFJQjGlClcGk7kOJoFO4lxSVhxUjdKF2dPJ2srv8IYAAueZPC9W21eAvoIyvwyK3uQp4ZY3DilZH2ylNg+dRUPHevM3WQgMzYvgwQV+/Tb5zfPe42CM0Tq6DQMxviWs3JzFPOLzKI7xx6BVK4gZ1fLsS+jGAXlqetGxtGSm+8MBKdf9rVHFLrgO+gXBpPH7OH6PPdT8RqzO+q3kMzVtCV/Hw/jgSYJFR+DoNBg2qV0UB44w0DrKGdtyMwr5kEo0kE6TpGbOZCdqXbzhrHwd4fNm4PdAFGfOO608QKgyZAuPorzgq0alw+FchR+tebEYtHgUvwDcgniMkphKwm9CC96Tigrg4xEq7H2NQAtgTyp7mcYNMJDkskOd0aV+Amd7awOC+7Hn4mJ/S7zRHyU58sy/mTbPnsPzn/kDfuP8Eb6mG7+WCOuPQqqPLNQs5pdUYlp43bzN8XoeNsOyzniwBl8mWiPz+Z/i4bwPuELrSedZx93//jixgVbDRd7kMfeS/jO+jDf1YwsEwqQIy+hYcNcZBrSxfRmZAAA=",
+  hapday: "data:image/webp;base64,UklGRugBAABXRUJQVlA4INwBAAAQDACdASpAAEAAPtFUpUuoJKOhsfcaSQAaCWgAzmftKXRgPEA6QHmA/V3JAN5J8m7MALOOMCtZlgaQJnhAGoMtvEfzNzjr29xmFV19e6wFw2XoM9zv7u5oVgFLSFqn3eZfj3iSugMTfgAA/ulpH/9CT/+Js/+Js7aXzqwNtg7tuFqfPc3sVUVxOfPM7i1w2d9qn/B/mnmzAauM/M/cZJXeDj9F/ryJYMtgv+O0XO5B3m6pQPB6FOQ1jAWCHE5j1ljp1ALDYuZMQKl46vK4R7i2yB4ChtSvC25KGkoyEQcPqrIot5Cd6AgPImMF+KLqPU+xNHYYNGoBOEMm8jjgwUQIqsjoIOxBOmJ/95yIKAt0zxBEcD28yEr2k/ZeJO67yOHSH9j3rqASnGbEJzqfEBUj7mrynWZh8kKRkW23yX+9HQMtVKb+YATr5fShfkbDzrLgwOsdGIytWknk4Z3EtyTk8udZjCId2Nn4iaI7dESZ6cIKeGjjPPY5zjUNSdEMIclFQ1XfKJovnGaAS8B3cnEX4ia6ivppcVU8eSaU9zUhHkk7RctBhz7VDWOQ5/rqYIYqIz0IemukZ+udVoeL5amLespTu/Mq48brb1ATfpS7IUCsslv59g4sFlrAAA==",
+  gainz: "data:image/webp;base64,UklGRroBAABXRUJQVlA4IK4BAABQCQCdASpAAEAAPtFcqEyoJSQiMBYJAQAaCWcA0u61kw4RAQQH5d5+vN89M+wJ+sJzrhdsndJjBm+ubw3ZfbJoPuGUhHFVpX+0Dg+aieLjM1VH8AD+9L5+bAA2QXj/CgZJit1QstoN0HwwANgu7JpFulBe31aT/s/xNJC81WbaSh1euqZ5GhDvHRlb8qZ1Z/TrJLWNOGFf1GYMyygrvrjWvjyWnB9dW6iy7/3AbXdzZgb0o3fo3sxxGGsD8g63KGUd9rkrfKJKmPAPqYi2XRabsKPoTfQBakxtgJebP55/ofov0g2EdqrV2iwzGtAdnLxeGVn4+dsc2JbfTHq3bnhWPoAyIxUdWK3nWWreVcH42fGukKH+IviOIqgJgR2C/hwybEdE9gRWBMxmeQF2s1McvSkbtEkpcI5IdoPoXK9s7CkdXhSEWja/f1eI/8FaNRUdDqmf4LUlVEo5fUK2lj8Fs/FKLH6pe4/t9jsGoEZXhJVP7HSQULek/bz8TyLJe2SyRmD1IroaTO9MGQg/xrORuMuxUzg3Dt4bnn7l31IS1gLWnnECwkXL1i7ZwAAA",
+};
+
+// ─── SET IMAGES ────────────────────────────────────────────────────────────────
+document.getElementById('logo-img').src = L.clip;
+document.getElementById('vsl-logo').src = L.clip;
+document.getElementById('footer-logo').src = L.clip;
+
+// Avatar stack
+const avatars = [L.gainz, L.grateful, L.hapday];
+const stack = document.getElementById('avatar-stack');
+avatars.forEach((src, i) => {
+  const img = document.createElement('img');
+  img.src = src;
+  img.alt = '';
+  img.style.zIndex = 3 - i;
+  stack.appendChild(img);
+});
+
+// Brands
+document.querySelector('#brand-gainz img').src = L.gainz;
+document.querySelector('#brand-grateful img').src = L.grateful;
+document.querySelector('#brand-hapday img').src = L.hapday;
+
+// ─── PARTICLES ────────────────────────────────────────────────────────────────
+const pContainer = document.getElementById('particles');
+for (let i = 0; i < 14; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  const size = (i % 3 * 0.4 + 0.5) + 'px';
+  p.style.cssText = `
+    left:${Math.sin(i * 7) * 50 + 50}%;
+    top:${Math.cos(i * 5) * 50 + 50}%;
+    width:${size};height:${size};
+    animation:float ${14 + i}s ${i * 0.6}s infinite ease-in-out;
+  `;
+  pContainer.appendChild(p);
+}
+
+// ─── MARQUEE ──────────────────────────────────────────────────────────────────
+const items = ["ClippersHQ", "·", "$500K+ Paid", "·", "5K+ Clippers", "·", "2B+ Views", "·", "50+ Creators", "·"];
+const track = document.getElementById('marquee-track');
+for (let i = 0; i < 30; i++) {
+  const t = items[i % items.length];
+  const span = document.createElement('span');
+  span.textContent = t;
+  if (t === '·') span.className = 'dot';
+  track.appendChild(span);
+}
+
+// ─── SCROLL / NAV ─────────────────────────────────────────────────────────────
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 40);
+});
+
+// ─── INTERSECTION OBSERVER ────────────────────────────────────────────────────
+function observe(selector, threshold = 0.15) {
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.querySelectorAll ? null : null;
+        e.target.classList.add('visible');
+        // animate children
+        e.target.querySelectorAll('.stat-item,.step,.result-row').forEach(el => el.classList.add('visible'));
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold });
+  document.querySelectorAll(selector).forEach(el => obs.observe(el));
+}
+
+observe('#stats', 0.15);
+observe('#process', 0.1);
+observe('#results', 0.1);
+observe('#cta', 0.15);
+
+// Also observe process-line
+new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) document.getElementById('process-line').classList.add('animated');
+  });
+}, { threshold: 0.1 }).observe(document.getElementById('process'));
+
+// CTA specific
+new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) document.getElementById('cta-inner').classList.add('visible');
+  });
+}, { threshold: 0.15 }).observe(document.getElementById('cta'));
+
+// ─── VSL PLAY ─────────────────────────────────────────────────────────────────
+document.getElementById('play-btn').addEventListener('click', () => {
+  const wrap = document.querySelector('.vsl-wrap');
+  wrap.innerHTML = `<iframe id="vsl-iframe" src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&controls=1&modestbranding=1&rel=0" style="width:100%;height:100%;border:none" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>`;
+});
+</script>
+</body>
+</html>
